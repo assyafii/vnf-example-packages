@@ -1,0 +1,32 @@
+nsd: #Network service descriptor
+  nsd: 
+  - id: demo_nsd #global, unique identifier of NS instance
+
+    #Bellow for description, not mandatory
+    description: Example NS    
+    name: demo_nsd
+    version: '1.0'
+    designer: Luthfi.id
+
+    virtual-link-desc:
+    - id: mgmt #Name of internal network for management
+      mgmt-network: true #boolean value to check if network is VIM management network
+    - id: inside #Will created automatically from OSM
+      mgmt-network: false
+
+    vnfd-id: demo_vnf
+
+    df: #Deployment flavor
+    - id: default-df #ID of configured DF
+      vnf-profile:
+      - id: '1' #unique identifier of vnf-profile
+        virtual-link-connectivity: 
+        - constituent-cpd-id:
+          - constituent-base-element-id: '1'
+            constituent-cpd-id: vnf_cp0_ext #ID of ext-cpd from VNFD 
+          virtual-link-profile-id: mgmt #Internal network in Openstack
+        - constituent-cpd-id:
+          - constituent-base-element-id: '1'
+            constituent-cpd-id: vnf_cp1_int
+          virtual-link-profile-id: inside 
+        vnfd-id: demo_vnf #ID of the VNFD created earlier

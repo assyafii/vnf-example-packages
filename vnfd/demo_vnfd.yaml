@@ -1,0 +1,69 @@
+vnfd:
+  id: demo_vnf #identifier of the vnfd, must be globally unique value
+  
+  #below options are not mandatory
+  description: Example VNF with cloud-init feature
+  product-name: demo_vnf
+  provider: Luthfi.id
+  version: '1.0'
+
+  df: # Deployment flavour
+  - id: default_df #unique identifier of the deployment flavour
+    instantiation-level:
+    - id: default_instantiation_level #unique identifier of the a level within df
+      vdu-level:
+      - number-of-instances: 1
+        vdu-id: demo_vnf_vm #unique name of the VDU
+    vdu-profile:
+    - id: demo_vnf_vm
+      min-number-of-instances: 1
+      
+  ext-cpd:
+  - id: vnf_cp0_ext #identifier of the CPD
+    int-cpd:
+      cpd: eth0 #unique ID of int-cpd that will be described later under VDU 
+      vdu-id: demo_vnf_vm #unique name of the VDU
+  - id: vnf_cp1_int
+    int-cpd:
+      cpd: eth1
+      vdu-id: demo_vnf_vm
+ 
+  mgmt-cp: vnf_cp0_ext #management interface 
+
+  sw-image-desc:
+  - id: ubuntu20.04
+    image: ubuntu20.04
+    name: ubuntu20.04
+
+  virtual-compute-desc:
+  - id: demo_vnf_vm_compute #unique compute ID used when creating VDU
+    virtual-cpu:
+      num-virtual-cpu: 1
+    virtual-memory:
+      size: 1.0 #GB RAM
+  virtual-storage-desc:
+  - id: demo_vnf_vm_storage #unique storage ID referenced when creating VDU
+    size-of-storage: 10 #20 GB of disk size
+
+  vdu:
+  - cloud-init-file: cloud_init.cfg #reference to the cloud init file with startup configuration for the system
+    description: demo_vnf_vm
+    id: demo_vnf_vm #unique value for the VDU
+    int-cpd: 
+    - id: eth0 #unique ID of the interface
+      virtual-network-interface-requirement:
+      - name: eth0 #interface name of the interface to be presented on VIM (Openstack)
+        virtual-interface:
+          type: PARAVIRT #type of the interface, PARAVIRT is default value, more types are that are supported are mentioned in the schema
+    - id: eth1
+      virtual-network-interface-requirement:
+      - name: eth1
+        virtual-interface:
+          type: PARAVIRT
+
+    #when creating VDU, we reference image, storage and compute IDs created earlier
+    name: demo_vnf_vm
+    sw-image-desc: ubuntu20.04 # Your existing images
+    virtual-compute-desc: demo_vnf_vm_compute
+    virtual-storage-desc: demo_vnf_vm_storage
+
